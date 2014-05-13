@@ -70,7 +70,7 @@ void setup()
     meetAndroid.registerFunction(VideoRecord,   'D');   
     meetAndroid.registerFunction(VideoRecordStop,   'E');   
     pinMode(inPin, INPUT);      // sets the digital pin 7 as input
-    delay( 200 );
+    //delay( 200 );
 }
 
 void loop()
