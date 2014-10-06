@@ -3,11 +3,11 @@
 #define RESET_CMD_SIZE 4
 
 char myChar;
-
-static char RESET_CMD[RESET_CMD_SIZE] = {0x30, 0x20, 0x30, 0x20};
+int i=0; 
+static char RECEIVE_RESET_CMD[RESET_CMD_SIZE] = {0x00, 0x00, 0x00, 0x00};
 
 void reset() {
-    Serial.print("Reset");
+    Serial.println("Reset");
     digitalWrite(RESET_PIN, LOW);
     delay(100); 
     digitalWrite(RESET_PIN, HIGH);
@@ -22,17 +22,18 @@ void setup() {
 
 void loop() {
   while (Serial.available()) {
-    for (int i=0; i<RESET_CMD_SIZE; i++) {
-        myChar = Serial.read();
-        if (myChar == RESET_CMD[i]) {
-            if (i < RESET_CMD_SIZE - 1) 
-              continue;
-            else 
-              reset();
-        } else {
-            break;
-        }
+    myChar = Serial.read();
+    if (myChar == 0x30 || myChar == 0x20) {
+      RECEIVE_RESET_CMD[i]=myChar; 
+      if (RECEIVE_RESET_CMD[0] == 0x30 && 
+          RECEIVE_RESET_CMD[1] == 0x20 && 
+          RECEIVE_RESET_CMD[2] == 0x30 && 
+          RECEIVE_RESET_CMD[3] == 0x20 ) {
+         reset(); 
+      }
+      i++; 
     }
+    else { i=0;}
   }
 }
 
