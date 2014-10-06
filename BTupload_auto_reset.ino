@@ -1,36 +1,38 @@
 
-#define ResetPin 7
+#define RESET_PIN 7
+#define RESET_CMD_SIZE 4
 
-char myChar ;
-int i=0; 
+char myChar;
+
+static char RESET_CMD[RESET_CMD_SIZE] = {0x30, 0x20, 0x30, 0x20};
+
+void reset() {
+    Serial.print("Reset");
+    digitalWrite(RESET_PIN, LOW);
+    delay(100); 
+    digitalWrite(RESET_PIN, HIGH);
+}
 
 void setup() {
-  digitalWrite(ResetPin, HIGH);
+  digitalWrite(RESET_PIN, HIGH);
   Serial.begin(115200);   
   Serial.println("Start");
-  pinMode(ResetPin, OUTPUT);  
+  pinMode(RESET_PIN, OUTPUT);  
 }
 
 void loop() {
   while (Serial.available()) {
-    myChar = Serial.read();
-    if (myChar == 0x30 || myChar== 0x20) 
-      {
-        i++;
-        if (i==4)
-        {
-        Serial.print("Reset");
-        digitalWrite(ResetPin, LOW);
-        delay(100); 
-        digitalWrite(ResetPin, HIGH);
-        i=0;
+    for (int i=0; i<RESET_CMD_SIZE; i++) {
+        myChar = Serial.read();
+        if (myChar == RESET_CMD[i]) {
+            if (i < RESET_CMD_SIZE - 1) 
+              continue;
+            else 
+              reset();
+        } else {
+            break;
         }
-      }
-      else
-      {
-      i=0; 
-      }
-    Serial.print(myChar); //echo
-     Serial.print(",");
+    }
   }
 }
+
